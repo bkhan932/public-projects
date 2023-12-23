@@ -12,7 +12,8 @@ class MerchantController extends Controller
 {
     public function __construct(
         protected MerchantService $merchantService
-    ) {}
+    ) {
+    }
 
     /**
      * Useful order statistics for the merchant API.
@@ -25,8 +26,13 @@ class MerchantController extends Controller
         $from = $request->input('from');
         $to = $request->input('to');
 
-        $stats = $this->merchantService->getOrderStats($from, $to);
+        if (isset($from) && isset($to)) {
+            $stats = $this->merchantService->getOrderStats($from, $to);
+            $response = $stats;
+        } else {
+            $response = ['message' => 'Required parameters not found'];
+        }
 
-        return response()->json($stats);
+        return response()->json($response);
     }
 }

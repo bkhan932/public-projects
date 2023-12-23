@@ -78,7 +78,7 @@ class MerchantService
         $user->update([
             'name' => $data['name'],
             'email' => $data['email'],
-            'password' => bcrypt($data['api_key']),
+            'password' => $data['api_key'],
         ]);
 
         $user->merchant->update([
