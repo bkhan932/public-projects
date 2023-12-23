@@ -27,7 +27,7 @@ class AffiliateService
      */
     public function register(Merchant $merchant, string $email, string $name, float $commissionRate): Affiliate
     {
-        if(User::where('email', $email)->first()) {
+        if(User::where('email', $email)->exists()) {
             throw new AffiliateCreateException;
         }
         $affiliate = Affiliate::create([

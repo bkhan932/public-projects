@@ -12,15 +12,18 @@ use Illuminate\Support\Facades\Queue;
 class MerchantService
 {
     /**
-     * Get order statistics for the merchant.
+     * Get useful order stats for the merchant.
      *
      * @param  string $from
      * @param  string $to
+     * @param  int $merchantId
      * @return array
      */
-    public function getOrderStats(string $from, string $to): array
+    public function getOrderStats(string $from, string $to, int $merchantId): array
     {
-        $orders = Order::whereBetween('created_at', [$from, $to])->get();
+        $orders = Order::where('merchant_id', $merchantId)
+            ->whereBetween('created_at', [$from, $to])
+            ->get();
 
         $count = $orders->count();
         $commissionsWithoutAffiliate = $orders->whereNull('affiliate_id')->sum('commission_owed');

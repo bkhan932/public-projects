@@ -7,6 +7,7 @@ use App\Services\MerchantService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Auth\AuthenticationException;
 
 class MerchantController extends Controller
 {
@@ -26,13 +27,17 @@ class MerchantController extends Controller
         $from = $request->input('from');
         $to = $request->input('to');
 
-        if (isset($from) && isset($to)) {
-            $stats = $this->merchantService->getOrderStats($from, $to);
-            $response = $stats;
-        } else {
-            $response = ['message' => 'Required parameters not found'];
-        }
+        try {
+            $user = auth()->user();
+            if ($user) {
 
-        return response()->json($response);
+                $stats = $this->merchantService->getOrderStats($from, $to, $user->merchant->id);
+
+                return response()->json($stats);
+            } else
+                return response()->json(['error' => 'Unauthorized'], 401);
+        } catch (\Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
     }
 }
